@@ -1,0 +1,30 @@
+requires: ruby, vagrant 
+
+install normal virtualbox image. 
+  * minimal install - keep software to the bare minimum. 
+  * small disk - sparse disk. 
+  * create a data disk - sparse disk 20G
+  * small RAM
+  * 1 CPU
+  * root password vagrant
+
+Once installed:
+  * run yum update -y
+  * shutdown - make any changes to the virutal box you require (add more disk, less RAM, change boot order)
+  * Attach the device: VboxGuestAdditions.iso
+  * install ruby and rake (I also installed git)
+  * the hadoop_in_a_box Rakefile will do the following:
+  * create user vagrant, password vagrant
+  * create ssh keys - not signed. 
+  * make the following changes to sudo.
+    * change SSH_AUTH_OK, requiretty
+  * shutdown all unnecessary services
+  * shutdown virtualbox instance
+
+Vagrant:
+  * package the box
+    * vagrant package --base BaseBox --output BaseBox-centos-6.2.box --vagrantfile Vagrantfile
+    * Creates a file called 'BaseBox-centos-6.2.box' of about 530Mb
+    * Put that on a thumb-drive or a webserver.
+  *  
+
