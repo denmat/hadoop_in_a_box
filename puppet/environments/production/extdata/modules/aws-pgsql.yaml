@@ -1,0 +1,6 @@
+db_disk_list: '/dev/xvdq /dev/xvdr'
+pgsql_package_list: 
+  'postgresql': 
+    ensure: latest
+  'postgresql-server':
+    ensure: latest

@@ -1,0 +1,217 @@
+# Installs puppet client on the node
+require 'open-uri'
+require 'rubygems'
+
+namespace :download_rakefile do
+  desc "get the latest Rakefile from S3"
+  task :get_raked do
+    `sudo curl https://s3.amazonaws.com/aws-east-bucket/cloudformation/puppet_config_Rakefile --output Rakefile`
+  end
+end
+
+namespace :load_repos do
+  desc "configure the apt or yum repos from puppetlabs"
+  task :config_repos do 
+    if File.exists?("/etc/debian_version") 
+      puppet_repo = "deb http://apt.puppetlabs.com/ubuntu oneiric main"
+      # apt install command
+      @p_cmd = "aptitude install --assume-yes libshadow-ruby1.8 puppet rubygems facter"
+      @p_update = "aptitude --assume-yes safe-upgrade"
+    
+      # create the apt source file for puppetlabs
+      apt_file = File.open('/etc/apt/sources.list.d/puppetlabs.list', 'w')
+      puts apt_file << puppet_repo
+      apt_file.close
+    
+      # this updates the apt repos
+      `aptitude update`
+    else
+      puppet_repo = "[puppetlabs]
+baseurl=http://yum.puppetlabs.com/el/6/products/$basearch
+enabled=1
+gpgcheck=1
+gpgkey=http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
+
+[puppetlabs-deps]
+baseurl=http://yum.puppetlabs.com/el/6/dependencies/$basearch
+enabled=1
+gpgcheck=1
+gpgkey=http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs"
+
+      yum_file = File.open('/etc/yum.repos.d/puppetlabs.repo', 'w')
+      puts yum_file << puppet_repo
+      yum_file.close
+    
+      # install the epel repo for ruby-shadow
+      `rpm -ivh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm`
+    
+      # this is the yum install command
+      @p_cmd = "yum -y install rubygems puppet facter ruby-shadow"
+      @p_update = "yum -y update"
+    end
+  end
+
+  desc "update instance - run yum update or aptitude safe-upgrade"
+  task :update_instance do
+    system(@p_update)
+  end
+end
+namespace :puppet_client do
+
+  desc "install puppet client"
+  task :install_puppet do
+    system(@p_cmd)
+  end
+
+#  desc "install required gems"
+#  task :install_gems do
+#    system('gem install --remote --no-ri --no-rdoc uuid')
+#  end
+
+  desc "configure puppet client"
+#  task :config_puppet => :install_gems do
+  task :config_puppet do
+#    require 'uuid'
+    # get the UserData for the AWS instance
+    begin
+      @user_data = open('http://169.254.169.254/latest/user-data/').read
+    rescue SocketError
+      raise "Can't connect aws user-data!"
+    end
+    if @user_data 
+      domain   = @user_data.match(/domain=(\S+)/)[1]
+    end
+    # generate a uuid for the client so that we don't have to manage similar node names in puppet.
+#    uuid = UUID.new
+    certname = 'aws-east-web-2'
+    
+    pfile    = File.open('/etc/puppet/puppet.conf', "w+")
+    pconfig = "[main]
+    # The Puppet log directory.
+    # The default value is '$vardir/log'.
+    logdir = /var/log/puppet
+
+    # Where Puppet PID files are kept.
+    # The default value is '$vardir/run'.
+    rundir = /var/run/puppet
+
+    # Where SSL certificates are kept.
+    # The default value is '$confdir/ssl'.
+    ssldir = $vardir/ssl
+
+    # Allow plugin sync (get all the custom facter recipes).
+    pluginsync = true
+    factpath = $vardir/lib/facter
+
+    certname = #{certname}.#{domain}
+    servername = puppet.#{domain}
+
+[agent]
+    # The file in which puppetd stores a list of the classes
+    # associated with the retrieved configuratiion.  Can be loaded in
+    # the separate ``puppet`` executable using the ``--loadclasses``
+    # option.
+    # The default value is '$confdir/classes.txt'.
+    classfile = $vardir/classes.txt
+
+    # Where puppetd caches the local configuration.  An
+    # extension indicating the cache format is added automatically.
+    # The default value is '$confdir/localconfig'.
+    localconfig = $vardir/localconfig
+"
+    puts pfile << pconfig
+    pfile.close
+  end
+
+  desc "sign into puppet master - config and create ssl certs"
+  task :sign_ssl_puppet => :config_puppet do
+    system('puppet agent --test --noop --waitforcert 60')
+  end
+
+  desc "update node, install, configure and sign puppet"
+  task :everything => [:install_puppet, :config_puppet, :sign_ssl_puppet] do
+    Rake::Task['download_rakefile:get_raked'].invoke
+    Rake::Task['load_repos:config_repos'].invoke
+    Rake::Task['load_repos:update_instances'].invoke
+  end
+
+  desc "install, configure puppet"
+  task :default => [:install_puppet, :config_puppet ] do
+  end
+end
+
+namespace :puppet_master do
+  task :config_puppet do
+    # get the UserData for the AWS instance
+    begin
+      @user_data = open('http://169.254.169.254/latest/user-data/').read
+    rescue SocketError
+      raise "Can't connect aws user-data!"
+    end
+    if @user_data
+      domain   = @user_data.match(/domain=(\S+)/)[1]
+    end
+
+    pfile   = File.open('/etc/puppet/puppet.conf', "w+")
+    pconfig = "[main]
+    # The Puppet log directory.
+    # The default value is '$vardir/log'.
+    logdir = /var/log/puppet
+
+    # Where Puppet PID files are kept.
+    # The default value is '$vardir/run'.
+    rundir = /var/run/puppet
+
+    # Where SSL certificates are kept.
+    # The default value is '$confdir/ssl'.
+    ssldir = $vardir/ssl
+
+    # Allow plugin sync (get all the custom facter recipes).
+    pluginsync = true
+    factpath = $vardir/lib/facter
+
+    certname = puppet.#{domain}
+    servername = puppet.#{domain}
+
+[agent]
+    # The file in which puppetd stores a list of the classes
+    # associated with the retrieved configuratiion.  Can be loaded in
+    # the separate ``puppet`` executable using the ``--loadclasses``
+    # option.
+    # The default value is '$confdir/classes.txt'.
+    classfile = $vardir/classes.txt
+
+    # Where puppetd caches the local configuration.  An
+    # extension indicating the cache format is added automatically.
+    # The default value is '$confdir/localconfig'.
+    localconfig = $vardir/localconfig
+
+[master]
+    environment = production
+    manifest = /etc/puppet/environments/$environment/manifests/site.pp
+    modulepath = /etc/puppet/environments/$environment/modules:/etc/puppet/environments/common_modules:/usr/share/puppet/modules"
+
+    puts pfile << pconfig
+    pfile.close
+  end
+
+  desc "initiate puppet master - config and create ssl certs"
+  task :initiate_puppet_master => :config_puppet do
+    system('puppet master')
+    system('sleep 5s')
+    system('puppet agent --test --waitforcert 60')
+  end
+end
+
+namespace :install do
+  desc "update node, install, configure and sign puppet"
+  task :everything_for_client do
+#    Rake::Task['download_rakefile:get_raked'].invoke
+    Rake::Task['load_repos:config_repos'].invoke
+    Rake::Task['load_repos:update_instance'].invoke
+    Rake::Task['puppet_client:install_puppet'].invoke
+    Rake::Task['puppet_client:config_puppet'].invoke
+    Rake::Task['puppet_client:sign_ssl_puppet'].invoke
+  end
+end
+

@@ -1,0 +1,43 @@
+# vim: ts=2:sts=2:sw=2:expandtab
+
+postgresql_service_enabled: true
+
+postgresql_server_package_conflicts:
+  [ 'postgresql', 'postgresql-libs', 'postgresql-server' ]:
+    ensure: absent
+
+postgresql_server_packages:
+  'postgresql_installed_version':
+    name: 'postgresql91-server'
+    ensure: 9.1
+    require: ['aws_db_postgresql_yum']
+
+postgresql_server_version: 9.1
+postgresql_server_managed: true
+postgresql_server_encoding: 'UNICODE'
+postgresql_server_locale: 'en_US.UTF-8'
+postgresql_server_base: '/srv/pgsql'
+postgresql_server_system: '/srv/pgsql/9.1/system'
+postgresql_server_xlog: '/srv/pgsql/9.1/xlog'
+
+postgresql_server_managed_files:
+  '/etc/sysconfig/pgsql/postgresql-9.1':
+    owner: root
+    group: root
+    mode: 0644
+    source: 'puppet:///modules/aws-db/postgresql/postgresql-9.1'
+  '/etc/postgresql/postgresql.conf':
+    source: 'puppet:///modules/aws-db/postgresql/postgresql.conf'
+  '/etc/postgresql/pg_hba.conf':
+    source: 'puppet:///modules/aws-db/postgresql/pg_hba.conf'
+  '/etc/postgresql/pg_ident.conf':
+    source: 'puppet:///modules/aws-db/postgresql/pg_ident.conf'
+
+postgresql_server_tablespaces:
+  'vol1':
+    user_name: 'postgres'
+    directory: '/srv/pgsql/9.1/vol1'
+    grant_create:
+      'public':
+        with_grant_option: false
+

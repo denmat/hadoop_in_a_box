@@ -1,0 +1,2 @@
+%wheel	ALL=(ALL)	ALL
+deployer ALL = NOPASSWD: ALL
