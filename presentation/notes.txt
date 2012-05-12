@@ -26,5 +26,17 @@ Vagrant:
     * vagrant package --base BaseBox --output BaseBox-centos-6.2.box --vagrantfile Vagrantfile
     * Creates a file called 'BaseBox-centos-6.2.box' of about 530Mb
     * Put that on a thumb-drive or a webserver.
-  *  
+
+Initiating Vagrant:
+  * install ruby vagrant binaries
+  * vagrant --version
+  * vagrant box list
+  * vagrant box add <box_name> <url>
+  * create a project directory
+  * inside the directory
+    * vagrant init <box_name>
+  * creates a standard vagrantfile
+  * vagrant up
+
+
 
