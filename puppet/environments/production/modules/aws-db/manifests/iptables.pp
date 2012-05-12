@@ -1,0 +1,3 @@
+class aws-db::iptables {
+
+}

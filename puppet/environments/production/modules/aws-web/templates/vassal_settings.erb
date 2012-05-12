@@ -1,0 +1,16 @@
+database:
+    reader: postgresql://app_read:lamepass@db.us-e.mylocal/ddp
+    writer: postgresql://app_write:supersecret@db.us-e.mylocal/ddp
+base_url: https://app.digitalmarketresearchapps.com/
+dump:
+    path: /data
+bootstrap:
+    path: /opt/vassal/installers/bootstrap/windows
+version:
+    base_url: https://app.digitalmarketresearchapps.com/dl
+    installers:
+        path: /opt/vassal/installers/root
+manage:
+    install_key:
+        generate: true
+        unregister: true
