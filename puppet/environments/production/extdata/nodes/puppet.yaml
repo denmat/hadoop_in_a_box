@@ -1,0 +1,60 @@
+mcollective_service_enabled: true
+rabbitmq_service_enabled: true
+dns_master: latest
+dns_master_service: true
+puppet_package_list:
+  activerecord:
+    ensure: '3.0.12'
+    provider: gem
+  arel:
+    ensure: '2.0.10'
+    provider: gem
+  builder:
+    ensure: '2.1.2'
+    provider: gem
+  gpgme:
+    ensure: '2.0.0'
+    provider: gem
+  hiera:
+    ensure: '0.3.0'
+    provider: gem
+  hiera-gpg: 
+    ensure: '1.0.2'
+    provider: gem
+  hiera-puppet:
+    ensure: '0.3.0'
+    provider: gem
+  stomp:
+    ensure: '1.2.2'
+    provider: gem
+  pg:
+    ensure: present
+    provider: gem
+  puppet:
+    ensure: 'present'
+  facter:
+    ensure: 'present'
+puppet_master: puppet.us-e.mylocal
+puppet_certname: puppet.us-e.mylocal
+puppet_db_user: puppet
+puppet_db_password: 'apassword'
+puppet_pgsql_password: 'apassword'
+pgsql_config_files:
+  '/var/lib/pgsql9/data/pg_hba.conf':
+    ensure: present
+    source: "puppet:///modules/-provisioning/postgresql/pg_hba.conf"
+  '/var/lib/pgsql9':
+    ensure: directory
+    mode:   0700
+  '/var/lib/pgsql9/data':
+    ensure: directory
+    mode: 0700
+postgresql_server_base: '/var/lib/pgsql9'
+postgresql_server_data: '/var/lib/pgsql9/data'
+postgresql_encoding: UTF8
+postgresql_locale: en_US.UTF-8 
+pgsql_package_list: 
+  'postgresql':
+    ensure: present
+  'postgresql-server':
+    ensure: present

@@ -1,0 +1,25 @@
+:backends: - yaml
+#           - gpg
+#           - puppet
+
+:hierarchy: - nodes/%{node}
+            - operatingsystem/%{operatingsystem}
+            - location/%{location}
+            - modules/%{calling_module}
+            - private/%{calling_module}
+            - roles/%{role}
+            - common/public_keys
+            - common/repos
+            - common/users
+            - common/groups
+            - common/database
+
+:yaml:
+    :datadir: /etc/puppet/environments/%{environment}/extdata
+
+#:puppet:
+#    :datasource: data
+
+#:gpg:
+#    :datadir: /etc/puppet/environments/%{environment}/extdata/
+#    :key_dir: /etc/puppet/keyrings/production/

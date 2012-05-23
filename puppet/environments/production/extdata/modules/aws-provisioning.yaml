@@ -1,0 +1,36 @@
+puppet_master: puppet
+puppet_certname: puppet
+puppet_db_user: puppet
+puppet_db_password: 'apassword'
+puppet_pgsql_password: 'apassword'
+puppet_testing_packages:
+  'cucumber-puppet':
+    ensure: 0.3.7
+    provider: gem
+  'database_cleaner':
+    ensure: 0.7.2
+    provider: gem
+
+pgsql_package_list:
+  postgresql-server:
+    ensure: present
+pgsql_config_files:
+  '/var/lib/pgsql9/data/pg_hba.conf':
+    ensure: present
+    source: "puppet:///-provisioning/postgresql/pg_hba.conf"
+mcollective_client_packages: 
+  'mcollective-client':
+    ensure: present
+stompd_host: puppet.us-e.mylocal
+mcollective_server_packages:
+  'mcollective':
+    ensure: present
+  'stomp':
+    ensure: present
+    provider: gem
+mcollective_service_enabled: true
+rabbitmq_service_enabled: false
+rabbitmq_package_list:
+  'rabbitmq-server':
+    ensure: present
+

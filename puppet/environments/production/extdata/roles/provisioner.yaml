@@ -1,0 +1,31 @@
+httpd_package_list: 
+  'httpd': 
+    ensure: present
+  'mod_ssl':
+    ensure: present
+  'mod_passenger':
+    ensure: present
+
+httpd_service:
+  httpd:
+    enable: true
+    ensure: true
+
+httpd_conf:
+  '/etc/httpd/conf/httpd.conf':
+    ensure: present
+    source: "puppet:///modules/-web/httpd/conf/default_httpd.conf"
+  '/etc/httpd/conf.d/sites-enabled':
+    ensure: directory
+    mode:   0755
+deploy_vhost_puppetmaster:
+  '/etc/httpd/conf.d/sites-enabled/puppetmaster.conf':
+    ensure: present
+    source: "puppet:///modules/-web/httpd/vhost/puppetmaster.conf"
+  '/var/www/html/puppet':
+    ensure: directory
+    owner:  puppet
+    mode:   0755
+    recurse: true
+    source:  "puppet:///modules/-provisioning/puppet/html/puppet"
+

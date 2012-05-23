@@ -1,0 +1,28 @@
+topicprefix = /topic/
+main_collective = mcollective
+collectives = mcollective
+<% if scope.lookupvar('osfamily') == 'Debian' -%>
+libdir = /usr/share/mcollective/plugins
+daemonize = 0
+<% else -%>
+libdir = /usr/libexec/mcollective
+daemonize = 1
+<% end -%>
+logfile = /var/log/mcollective.log
+loglevel = info
+
+# Plugins
+securityprovider = psk
+plugin.psk = JoCh2di7ai'fobie
+
+connector = stomp
+plugin.stomp.host = puppet.<%= scope.lookupvar('domain') %>
+plugin.stomp.port = 61613
+plugin.stomp.user = mcollective
+plugin.stomp.password = Wu1gei8eif@oh}ph
+
+# Facts
+factsource = yaml
+plugin.yaml = /etc/mcollective/facts.yaml
+#factsource = facter
+

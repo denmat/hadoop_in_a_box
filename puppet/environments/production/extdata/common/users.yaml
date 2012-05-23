@@ -1,0 +1,35 @@
+admin_users:
+  denmat:
+    uid: 1001
+    password: ''
+    ensure: present
+
+deployer_user:
+  deployer:
+    uid: 515
+    shell: '/bin/bash'
+    home: '/apps/deployments'
+    ensure: present
+    groups: [ 'puppet' ]
+
+admin_groups_ubuntu:
+  groups: ['sudo']
+  shell: '/bin/bash'
+  managehome: true
+  password_max_age: 60
+  password_min_age: 0
+
+admin_groups_ec2:
+  groups: ['wheel']
+  shell: '/bin/bash'
+  managehome: true
+  password_max_age: 60
+  password_min_age: 0
+
+db_groups:
+  groups: ['pgsql']
+  shell: '/bin/bash'
+  managehome: true
+  password_max_age: 60
+  password_min_age: 0
+

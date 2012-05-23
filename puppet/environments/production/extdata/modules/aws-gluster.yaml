@@ -1,0 +1,6 @@
+gluster_package_list_server: [ 'http://download.gluster.com/pub/gluster/glusterfs/qa-releases/3.3-beta-2/RHEL/glusterfs-core-3.3beta2-1.x86_64.rpm',
+                               'compat-readline5' ]
+gluster_package_list_client_Linux: [ 'http://download.gluster.com/pub/gluster/glusterfs/qa-releases/3.3-beta-2/RHEL/glusterfs-fuse-3.3beta2-1.x86_64.rpm',
+                               'compat-readline5' ]
+gluster_package_list_client_Debian: [ 'glusterfs-common',
+                                      'glusterfs-client' ]

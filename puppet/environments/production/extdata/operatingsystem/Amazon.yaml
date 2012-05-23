@@ -1,0 +1,17 @@
+mcollective_service:
+  mcollective: 
+    hasstatus: true
+    hasrestart: true
+mcollective_server_packages:
+  'mcollective':
+    ensure: 2.0.0-1.el6
+  'mcollective-common':
+    ensure: 2.0.0-1.el6
+
+puppet_client_packages:
+  'puppet':
+    ensure: '2.7.13-1.el6'
+puppet_server_packages:
+  'puppet-server':
+    ensure: '2.7.13-1.el6'
+

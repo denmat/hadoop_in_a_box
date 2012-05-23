@@ -1,0 +1,3 @@
+class provisioning::puppet {
+
+}

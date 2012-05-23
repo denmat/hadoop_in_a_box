@@ -1,0 +1,17 @@
+mcollective_service:
+  "mcollective":
+    name: "mcollective.conf"
+    provider: 'init'
+    status: "/usr/bin/test `status mcollective | grep 'start/running, process' -c` -ne 0"
+    start:  'start mcollective'
+    stop:   'stop mcollective'
+mcollective_server_packages:
+  'mcollective':
+    ensure: 2.0.0-2
+  'mcollective-common':
+    ensure: 2.0.0-2
+puppet_client_packages:
+  'puppet-common':
+    ensure: '2.7.14-1puppetlabs1'
+  'puppet':
+    ensure: '2.7.14-1puppetlabs1'
