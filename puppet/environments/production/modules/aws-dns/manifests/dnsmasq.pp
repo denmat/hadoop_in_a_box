@@ -1,2 +1,0 @@
-class aws-dns::dnsmasq {
-}

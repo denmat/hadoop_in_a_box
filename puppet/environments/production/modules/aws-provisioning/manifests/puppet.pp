@@ -1,3 +1,0 @@
-class aws-provisioning::puppet {
-
-}

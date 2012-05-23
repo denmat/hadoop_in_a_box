@@ -1,3 +1,0 @@
-class aws-db::iptables {
-
-}

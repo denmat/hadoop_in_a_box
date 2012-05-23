@@ -1,8 +1,0 @@
-public_key_defaults:
-  type: ssh-rsa
-  
-admin_public_keys:
-  denmat:
-    key: 
-    ensure: present
-    user: denmat

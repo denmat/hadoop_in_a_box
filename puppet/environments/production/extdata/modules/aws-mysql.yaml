@@ -1,4 +1,0 @@
-mysql_package_list:
-  mysql-server:
-    ensure: latest
-db_disk_list: '/dev/xvdm /dev/xvdn'
